@@ -1,0 +1,123 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="drag-drop">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      li{
+        height: 70px;
+        width: 50%;
+        margin: 4px 100px;
+        background: purple;
+      }
+      .container{
+        width: 50px;
+        height: 50px;
+        margin: 10px;
+        background: teal;
+      }
+
+    </style>
+    <ul>
+    <template is="dom-repeat" items="[[data]]" as="element" index-as="i">
+      <li
+      draggable="true"
+      on-dragstart="_drag"
+      on-dragover="_allowDrop"
+      on-dragenter="_dragEnter"
+      on-dragleave="_dragleave"
+      on-drop="_drop"
+        on-dragend="_dragEnd"
+        >
+        <div class="container" >
+        [[element]]
+      </div>
+    </li>
+    </template>
+  </ul>
+  </template>
+
+  <script>
+    /**
+     * `drag-drop`
+     *
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class DragDrop extends Polymer.Element {
+      static get is() { return 'drag-drop'; }
+      static get properties() {
+          return {
+            data: {
+              type: Array,
+              value: () => [1,2,3,4,5,6,7]
+            },
+            source: {
+              type: String
+            },
+            index1: {
+              type: Number
+            },
+            index2: {
+              type: Number
+            }
+          }
+        }
+        _drag(e) {
+          console.log('drag start');
+          this.index1 = [...e.target.parentElement.children].indexOf(e.target);
+          console.log(index);
+          e.dataTransfer.setData("text/plain", e.target.innerHTML);
+          e.dataTransfer.effectAllowed = "move";
+          this.source = e.target;
+          // debugger;
+
+        }
+        _allowDrop(e) {
+          if (e.preventDefault) {
+              e.preventDefault(); // Necessary. Allows us to drop.
+          }
+          e.dataTransfer.dropEffect = 'move';
+          console.log('drag over');
+        }
+        _dragEnter(e){
+          console.log('drag enter');
+        }
+        _dragleave(e){
+          console.log('drag leave');
+        }
+        _drop(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (e.target.localName === 'li') {
+            // debugger;
+            console.log('drop');
+            if (e.stopPropagation) {
+              e.stopPropagation();
+            }
+            if (this.source != e.target) {
+              this.source.innerHTML = e.target.innerHTML;
+              e.target.innerHTML = e.dataTransfer.getData('text/plain');
+              // this.index2 = [...e.target.parentElement.children].indexOf(e.target);
+              // debugger;
+              // this.data.splice(this.index1,1);
+              // const newA = this.data.splice(this.index2,0,(this.index1+1));
+              // this.set('data', newA);
+              debugger;
+            }
+          }
+
+          return false;
+        }
+        _dragEnd() {
+
+        }
+    }
+
+    window.customElements.define(DragDrop.is, DragDrop);
+  </script>
+</dom-module>
